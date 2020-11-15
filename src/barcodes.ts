@@ -32,8 +32,8 @@ async function criarCodigo(data: string): Promise<string> {
         bcid: 'datamatrix',
         text: data,
         backgroundcolor: 'FFFFFF',
-        scaleX: 3, // changeme: 1
-        scaleY: 3, // ^^^^^^
+        scaleX: 1,
+        scaleY: 1,
         width: 25,
         height: 25,
         paddingwidth: 1,
