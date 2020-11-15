@@ -4,6 +4,13 @@ import fs = require('fs');
 import bwipjs = require('bwip-js');
 
 temp.track(); // limpa tempfiles ao sair do node
+interface Datamatrix {
+  cepDestino: string,
+  numeroRuaDestino: string,
+  cepRemetente: string,
+  numeroRuaRemetente: string,
+  checkSumCepDestino: string,
+}
 
 function sanitizeCep(cep: string): string {
   let sanitizedCep: string = cep.trim();
@@ -16,19 +23,21 @@ function sanitizeCep(cep: string): string {
   return sanitizedCep;
 }
 
-async function criarDatamatrix(cep: string): Promise<string> {
-  const sanitizedCep: string = sanitizeCep(cep);
+async function criarCodigo(data: string): Promise<string> {
   let returnPath = '';
 
   await new Promise((resolve, reject) => {
     bwipjs.toBuffer(
       {
         bcid: 'datamatrix',
-        text: sanitizedCep,
-        scaleX: 1,
-        scaleY: 1,
-        height: 25,
+        text: data,
+        backgroundcolor: 'FFFFFF',
+        scaleX: 3, // changeme: 1
+        scaleY: 3, // ^^^^^^
         width: 25,
+        height: 25,
+        paddingwidth: 1,
+        paddingheight: 1,
         includetext: false,
       },
       (err, png) => {
@@ -49,7 +58,10 @@ async function criarDatamatrix(cep: string): Promise<string> {
             } // else
             reject(_err);
           }
-          const tempFile: promises.FileHandle = await fs.promises.open(info.path, 'w');
+          const tempFile: promises.FileHandle = await fs.promises.open(
+            info.path,
+            'w',
+          );
           await fs.promises.writeFile(tempFile, png);
           fs.close(info.fd, (__err) => {
             if (_err) reject(new Error(__err?.message));
@@ -63,6 +75,41 @@ async function criarDatamatrix(cep: string): Promise<string> {
 
   if (!returnPath) throw new Error('Erro ao criar QR Code!');
   return returnPath;
+}
+
+async function criarDatamatrix(
+  CepDestino: string,
+  NumeroRuaDestino: number,
+  CepRemetente: string,
+  NumeroRuaRemetente: number,
+) : Promise<string> {
+  const cepDestino: string = sanitizeCep(CepDestino);
+  const cepRemetente: string = sanitizeCep(CepRemetente);
+  if (NumeroRuaDestino > 99999 || NumeroRuaRemetente > 99999) {
+    throw new Error('Erro: número de rua muito alto');
+  }
+  const numeroRuaDestino: string = String(NumeroRuaDestino).padStart(5, '0');
+  const numeroRuaRemetente: string = String(NumeroRuaRemetente).padStart(5, '0');
+  let checkSum = 0;
+  cepDestino.split('').forEach((d) => {
+    const digit = parseInt(d, 10);
+    checkSum += digit;
+    if (checkSum >= 10) {
+      checkSum -= 10;
+    }
+  });
+  checkSum = 10 - checkSum;
+  const checkSumCepDestino = String(checkSum);
+  const datamatrix: Datamatrix = {
+    cepDestino,
+    numeroRuaDestino,
+    cepRemetente,
+    numeroRuaRemetente,
+    checkSumCepDestino,
+  };
+  const data: string = `${datamatrix.cepDestino}${datamatrix.numeroRuaDestino}${datamatrix.cepRemetente}${datamatrix.numeroRuaRemetente}${datamatrix.checkSumCepDestino}`
+    .padEnd(126, '0');
+  return criarCodigo(data);
 }
 
 export default criarDatamatrix;
