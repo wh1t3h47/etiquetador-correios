@@ -60,6 +60,13 @@
     "@nodelib/fs.scandir" "2.1.3"
     fastq "^1.6.0"
 
+"@types/bwip-js@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bwip-js/-/bwip-js-2.0.0.tgz#3a2449e0b3e13e14ee8ca1b11b34a3130f531e56"
+  integrity sha512-qj9f1pDEu4544RFGI3n/dDcXDTX+dqJUq3PzWiHqVPvsBnhtDbPrQPGfNsp2R3pD5k9fGCR5xNOwM2btLKZHdg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/json-schema@^7.0.3":
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
@@ -353,6 +360,11 @@ buffer-from@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
+
+bwip-js@^2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/bwip-js/-/bwip-js-2.0.11.tgz#2152224482527c0134e572cadd9787799499b39d"
+  integrity sha512-8hAwUM+5FrGguKRaFi2QxKF9SxQM4fAfTy5TVAkeBODH6Eq3Q8MMEoBN+ymIBxiGKL+wNHB1Z1pv5f9oWGLUKQ==
 
 call-bind@^1.0.0:
   version "1.0.0"
