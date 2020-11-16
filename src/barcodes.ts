@@ -118,7 +118,7 @@ class BarCodeGenerator {
       126,
       '0',
     );
-    this.criarCodigo({
+    await this.criarCodigo({
       bcid: 'datamatrix',
       text: data,
       backgroundcolor: 'FFFFFF',
@@ -129,6 +129,24 @@ class BarCodeGenerator {
       paddingwidth: 1,
       paddingheight: 1,
       includetext: false,
+    });
+    return this.barcodePath;
+  }
+
+  public async createCode128(CepDestino: string): Promise<string> {
+    this.sanitizeCep(CepDestino);
+    const cepDestino = this.sanitizedCep;
+    await this.criarCodigo({
+      bcid: 'code128',
+      text: cepDestino,
+      backgroundcolor: 'FFFFFF',
+      scaleX: 1,
+      scaleY: 1,
+      width: 60,
+      height: 21,
+      paddingwidth: 5,
+      includetext: false,
+      includecheck: true,
     });
     return this.barcodePath;
   }
