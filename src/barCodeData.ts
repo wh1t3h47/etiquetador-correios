@@ -1,9 +1,4 @@
-import { promises } from 'fs';
-import temp = require('temp');
-import fs = require('fs');
 import bwipjs = require('bwip-js');
-
-temp.track(); // limpa tempfiles ao sair do node
 
 interface Datamatrix {
   cepDestino: string,
@@ -13,14 +8,11 @@ interface Datamatrix {
   checkSumCepDestino: string,
 }
 
-class BarCodeGenerator {
-  private sanitizedCep: string;
-
-  private barcodePath: string;
+class BarCodeData {
+  protected sanitizedCep: string;
 
   constructor() {
     this.sanitizedCep = '';
-    this.barcodePath = '';
   }
 
   private sanitizeCep(cep: string): void {
@@ -34,54 +26,12 @@ class BarCodeGenerator {
     this.sanitizedCep = sanitizedCep;
   }
 
-  private async criarCodigo(
-    barcodeGen: bwipjs.ToBufferOptions,
-  ): Promise<void> {
-    let resolvedPath = '';
-
-    await new Promise((resolve, reject) => {
-      bwipjs.toBuffer(barcodeGen, (err, png) => {
-        if (err) {
-          if (typeof err === 'string') {
-            reject(new Error(err));
-          } // else
-          reject(err);
-        }
-        // `png` is a Buffer
-        // png.length           : PNG file length
-        // png.readUInt32BE(16) : PNG image width
-        // png.readUInt32BE(20) : PNG image height
-        temp.open('etiquetaCorreios', async (_err, info) => {
-          if (_err) {
-            if (typeof _err === 'string') {
-              reject(new Error(_err));
-            } // else
-            reject(_err);
-          }
-          const tempFile: promises.FileHandle = await fs.promises.open(
-            info.path,
-            'w',
-          );
-          await fs.promises.writeFile(tempFile, png);
-          fs.close(info.fd, (__err) => {
-            if (_err) reject(new Error(__err?.message));
-          }); // else
-          resolvedPath = info.path;
-          resolve();
-        });
-      });
-    });
-
-    if (!resolvedPath) throw new Error('Erro ao criar QR Code!');
-    this.barcodePath = resolvedPath;
-  }
-
-  public async createDatamatrix(
+  public createDatamatrix(
     CepDestino: string,
     NumeroRuaDestino: number,
     CepRemetente: string,
     NumeroRuaRemetente: number,
-  ): Promise<string> {
+  ): bwipjs.ToBufferOptions {
     this.sanitizeCep(CepDestino);
     const cepDestino: string = this.sanitizedCep;
     this.sanitizeCep(CepRemetente);
@@ -118,7 +68,7 @@ class BarCodeGenerator {
       126,
       '0',
     );
-    await this.criarCodigo({
+    return {
       bcid: 'datamatrix',
       text: data,
       backgroundcolor: 'FFFFFF',
@@ -129,14 +79,13 @@ class BarCodeGenerator {
       paddingwidth: 1,
       paddingheight: 1,
       includetext: false,
-    });
-    return this.barcodePath;
+    };
   }
 
-  public async createCode128(CepDestino: string): Promise<string> {
+  public createCode128(CepDestino: string): bwipjs.ToBufferOptions {
     this.sanitizeCep(CepDestino);
     const cepDestino = this.sanitizedCep;
-    await this.criarCodigo({
+    return {
       bcid: 'code128',
       text: cepDestino,
       backgroundcolor: 'FFFFFF',
@@ -147,9 +96,8 @@ class BarCodeGenerator {
       paddingwidth: 5,
       includetext: false,
       includecheck: true,
-    });
-    return this.barcodePath;
+    };
   }
 }
 
-export default BarCodeGenerator;
+export default BarCodeData;
