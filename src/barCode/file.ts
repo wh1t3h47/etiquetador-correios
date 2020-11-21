@@ -1,8 +1,8 @@
 import { promises } from 'fs';
+import BarCodeData from './data'; // eslint-disable-line
 import temp = require('temp');
 import fs = require('fs');
 import bwipjs = require('bwip-js');
-import BarCodeData from './barCodeData'; // eslint-disable-line
 
 temp.track(); // limpa tempfiles ao sair do node
 

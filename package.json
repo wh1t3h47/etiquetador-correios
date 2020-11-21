@@ -4,11 +4,11 @@
   "description": "Gerador de etiquetas para encomendas do correios",
   "main": "src/index.ts",
   "repository": "https://github.com/phruzic/etiquetador-correios",
-  "author": "lucaashoff",
+  "author": "phruzic",
   "license": "GPL-3.0-or-later",
   "private": false,
   "scripts": {
-    "lint": "eslint --fix --ext .ts src/ \"src/*\" -c .eslintrc.json"
+    "lint": "eslint --fix --ext .ts \"./src/**\" -c .eslintrc.json"
   },
   "devDependencies": {
     "@types/bwip-js": "^2.0.0",

@@ -46,6 +46,12 @@ function DrawingPDFKit(doc: PDFKit.PDFDocument, opts:bwipjs.ToBufferOptions) {
       gsDx = padl;
       gsDy = padt;
     },
+    // Stuff used internally by bwipjs
+    scale(_x:number, _y:number) {}, // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
+    measure(_str: unknown, _font: unknown, _fwidth:number, _fheight:number) {
+      return { width: 0, ascent: 0, descent: 0 }; // we dont use font, no measure
+    },
     // Unconnected stroked lines are used to draw the bars in linear barcodes.
     // No line cap should be applied.  These lines are always orthogonal.
     line(x0:number, y0:number, x1:number, y1:number, lw:number) {
@@ -78,4 +84,20 @@ function DrawingPDFKit(doc: PDFKit.PDFDocument, opts:bwipjs.ToBufferOptions) {
   };
 }
 
-export default DrawingPDFKit;
+function addCode(
+  doc: PDFKit.PDFDocument,
+  x: number,
+  y: number,
+  options: bwipjs.ToBufferOptions,
+) {
+  doc.save();
+  doc.translate(x, y);
+  // As declaracoes de tipo do @type/ bwipjs t^em problema
+  // @ts-ignore
+  bwipjs.fixupOptions(options);
+  // @ts-ignore
+  bwipjs.render(options, DrawingPDFKit(doc, options));
+  doc.restore();
+}
+
+export default addCode;

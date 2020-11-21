@@ -13,7 +13,23 @@
     "plugins": [
         "@typescript-eslint"
     ],
-    "ignorePatterns": ["*.js", "src/*.js"],
     "rules": {
+        // Fix broken airbnb rules:
+        // https://github.com/airbnb/javascript/blob/master/packages/eslint-config-airbnb-base/rules/imports.js#L139
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "ts": "never",
+                "tsx": "never"
+            }
+        ]
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".ts", ".tsx"]
+            }
+        }
     }
 }
