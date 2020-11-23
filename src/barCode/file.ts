@@ -1,12 +1,12 @@
 import { promises } from 'fs';
-import BarCodeData from './data'; // eslint-disable-line
 import temp = require('temp');
 import fs = require('fs');
 import bwipjs = require('bwip-js');
+import BarCodeData = require('./data');
 
 temp.track(); // limpa tempfiles ao sair do node
 
-class BarCodeFileGenerator extends BarCodeData {
+class BarCodeFileGenerator extends BarCodeData.default {
   private barcodePath: string;
 
   constructor() {

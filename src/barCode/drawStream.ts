@@ -1,7 +1,7 @@
 import PDFKit = require('pdfkit');
 import bwipjs = require('bwip-js');
 
-function DrawingPDFKit(doc: PDFKit.PDFDocument, opts:bwipjs.ToBufferOptions) {
+function DrawingPDFKit(doc: typeof PDFKit, opts:bwipjs.ToBufferOptions) {
   // Global graphics state
   let gsDx: number;
   let gsDy: number; // x,y translate (padding)
