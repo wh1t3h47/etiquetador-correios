@@ -1,5 +1,5 @@
-import PDFKit = require('pdfkit');
-import bwipjs = require('bwip-js');
+import PDFKit from 'pdfkit';
+import bwipjs from 'bwip-js';
 
 function DrawingPDFKit(doc: typeof PDFKit, opts:bwipjs.ToBufferOptions) {
   // Global graphics state

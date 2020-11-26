@@ -5,5 +5,5 @@ import DrawLabel from './label/correiosPackage/drawStream';
 (async () => {
   const dlbl = new DrawLabel();
   dlbl.test();
-  console.log('c4n y0u f33l it?');
+  console.log('generated /tmp/lol.pdf');
 })();

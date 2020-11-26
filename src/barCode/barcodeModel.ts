@@ -1,4 +1,4 @@
-import bwipjs = require('bwip-js');
+import bwipjs from 'bwip-js';
 
 interface Datamatrix {
   cepDestino: string,
@@ -8,7 +8,7 @@ interface Datamatrix {
   checkSumCepDestino: string,
 }
 
-class BarCodeData {
+class BarCodeModel {
   protected sanitizedCep: string;
 
   constructor() {
@@ -100,4 +100,4 @@ class BarCodeData {
   }
 }
 
-export default BarCodeData;
+export default BarCodeModel;

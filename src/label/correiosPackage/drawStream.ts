@@ -1,76 +1,10 @@
 import { writeFileSync } from 'fs';
-import PDFKit = require('pdfkit');
-import BarCodeData = require('../../barCode/data');
-import drawStream = require('../../barCode/drawStream');
+import { coordinates, coord, TextOptions } from '../pageTypes';
+import LabelModel from '../labelModel';
+import BarCodeData from '../../barCode/barcodeModel';
+import drawStream from '../../barCode/drawStream';
 
-type coordinates<M extends string = '0' | '1'> = {
-  // eslint-disable-next-line no-unused-vars
-  [k in M]: number;
-} & { length: 2 } & ReadonlyArray<number>;
-
-// Regras quebradas usando const enum no typescript:
-// https://github.com/typescript-eslint/typescript-eslint/issues/2484
-
-const enum coord { // eslint-disable-line
-  x, // eslint-disable-line
-  y, // eslint-disable-line
-}
-
-const enum positionOnPage { // eslint-disable-line
-  topLeft, // eslint-disable-line
-  topRight, // eslint-disable-line
-  bottomLeft, // eslint-disable-line
-  bottomRight, // eslint-disable-line
-}
-
-class DrawLabel {
-  private readonly doc: typeof PDFKit;
-
-  // Caso seja true, significa que temos mais de uma label na pagina, caso seja
-  // a segunda ou quarta, precisamos colocar ela a partir da metade da pagina
-  private label: positionOnPage;
-
-  private lastY: number;
-
-  private readonly pageSize: number;
-
-  private readonly halfPage: number;
-
-  private readonly marginTop: number;
-
-  private readonly marginLeft: number;
-
-  private readonly fontSizeSmall: number;
-
-  private readonly characterSpacingSmall: number;
-
-  constructor() {
-    this.doc = new PDFKit({ bufferPages: true });
-    this.pageSize = this.doc.page.width; // A4
-    this.halfPage = Math.round(this.pageSize / 2);
-    this.label = positionOnPage.topLeft; // primeira label
-    this.lastY = 0;
-    // propriedades de estilo que persistem em mais de um elemento da etiqueta
-    this.marginTop = 12;
-    this.marginLeft = 12;
-    this.fontSizeSmall = 8.2;
-    this.characterSpacingSmall = 0;
-  }
-
-  private get offset(): number {
-    return ( // eslint-disable-next-line operator-linebreak
-      this.label === positionOnPage.topRight ||
-      this.label === positionOnPage.bottomRight
-    ) // Se for a segunda etiqueta, elementos posicionados apos metade da pagina
-      ? this.halfPage - this.marginLeft
-      : 0; // Caso nao, coloque no inicio da pagina
-  }
-
-  private nextLabel(label?: number) {
-    const Label = label || this.label + 1;
-    this.label = Label;
-  }
-
+class DrawLabel extends LabelModel {
   private drawGluedLabelPlaceholder(): void {
     const cornerSize = 12; // Tamanho do canto do retangulo
     const widthBetweenCorners = 260; // Largura da caixa - cornerSize - marginLeft
@@ -164,7 +98,7 @@ class DrawLabel {
 
     // Colocar texto no placeholder da etiqueta colada
 
-    const opts: PDFKit.Mixins.TextOptions = {
+    const opts: TextOptions = {
       align: 'center',
       width: labelWidth,
       characterSpacing: characterSpacingBig,
@@ -199,7 +133,7 @@ class DrawLabel {
     let startDrawing: number = this.offset + this.marginLeft;
 
     let text = 'Recebedor:';
-    const opts: PDFKit.Mixins.TextOptions = {
+    const opts: TextOptions = {
       align: 'left',
       characterSpacing: this.characterSpacingSmall,
     };

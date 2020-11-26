@@ -1,12 +1,11 @@
-import { promises } from 'fs';
+import fs, { promises } from 'fs';
+import bwipjs from 'bwip-js';
 import temp = require('temp');
-import fs = require('fs');
-import bwipjs = require('bwip-js');
-import BarCodeData = require('./data');
+import BarCodeModel = require('./barcodeModel');
 
 temp.track(); // limpa tempfiles ao sair do node
 
-class BarCodeFileGenerator extends BarCodeData.default {
+class BarCodeFileGenerator extends BarCodeModel.default {
   private barcodePath: string;
 
   constructor() {
