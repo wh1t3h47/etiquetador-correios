@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 import BarcodeGenerator from './barCode/file';
-import DrawLabel from './label/correiosPackage/drawStream';
+import PdfDraw from './label/correiosPackage/drawStream';
 
 (async () => {
-  const dlbl = new DrawLabel();
-  dlbl.test();
-  console.log('generated /tmp/lol.pdf');
+  const pdfCreateFileWithStream = new PdfDraw();
+  pdfCreateFileWithStream.test();
 })();

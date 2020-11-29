@@ -22,6 +22,10 @@ class LabelModel {
 
   protected readonly characterSpacingSmall: number;
 
+  protected readonly characterSpacingBig: number
+
+  protected readonly fontSizeBig: number;
+
   constructor() {
     this.doc = new PDFKit({ bufferPages: true });
     this.pageSize = this.doc.page.width; // A4
@@ -33,6 +37,8 @@ class LabelModel {
     this.marginLeft = 12;
     this.fontSizeSmall = 8.2;
     this.characterSpacingSmall = 0;
+    this.characterSpacingBig = 0.2;
+    this.fontSizeBig = 10;
   }
 
   protected get offset(): number {

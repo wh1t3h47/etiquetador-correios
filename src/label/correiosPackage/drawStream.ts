@@ -1,11 +1,14 @@
 import { writeFileSync } from 'fs';
-import { coordinates, coord, TextOptions } from '../pageTypes';
+import {
+  coordinates, coord, TextOptions, BrazilState,
+} from '../pageTypes';
 import LabelModel from '../labelModel';
 import BarCodeData from '../../barCode/barcodeModel';
 import drawStream from '../../barCode/drawStream';
 
 class DrawLabel extends LabelModel {
   private drawGluedLabelPlaceholder(): void {
+    this.lastY = 0;
     const cornerSize = 12; // Tamanho do canto do retangulo
     const widthBetweenCorners = 260; // Largura da caixa - cornerSize - marginLeft
     const heightBetweenCorners = 139; // tamanho da caixa - cornerSize - marginLeft
@@ -16,9 +19,7 @@ class DrawLabel extends LabelModel {
     const startDrawing = this.offset + this.marginLeft;
 
     const lineGap = 3; // Espaco entre os dois textos do placeholder de etiqueta
-    const fontSizeBig = 10;
     const textY = 69; // Y do 'USO EXCLUSIVO DO CORREIOS' (incluindo marginLeft)
-    const characterSpacingBig = 0.2;
 
     // Seguimos a mesma ordem que as bordas no CSS seguem
 
@@ -101,13 +102,14 @@ class DrawLabel extends LabelModel {
     const opts: TextOptions = {
       align: 'center',
       width: labelWidth,
-      characterSpacing: characterSpacingBig,
+      characterSpacing: this.characterSpacingBig,
       lineGap,
     };
 
     this.doc
       .font('Helvetica')
-      .fontSize(fontSizeBig)
+      .fontSize(this.fontSizeBig)
+      .fill('black')
       .text(
         'USO EXCLUSIVO DOS CORREIOS',
         startDrawing, // X
@@ -179,8 +181,12 @@ class DrawLabel extends LabelModel {
     startDrawing = endDrawing + 2;
     this.doc
       .fontSize(this.fontSizeSmall)
-      .text(text, startDrawing, textY, opts);
+      .text(text,
+        startDrawing,
+        textY,
+        opts);
     startAfterText = 1 + startDrawing + this.doc.widthOfString(text, opts);
+    opts.indent = undefined;
     this.doc
       .moveTo(startAfterText, this.lastY)
       .lineCap('butt')
@@ -188,12 +194,131 @@ class DrawLabel extends LabelModel {
       .stroke('black');
   }
 
+  private drawShipToNeighbor(text?: string): void {
+    const marginTop = 9;
+    const boxHeight = 30;
+    const paddingTextX = 5;
+    const textBoxHeight = Math.round(boxHeight / 2) - 1;
+    const labelWidth = this.halfPage - this.marginLeft * 2;
+    this.lastY += marginTop;
+    this.doc
+      .rect(
+        this.marginLeft + this.offset,
+        this.lastY,
+        labelWidth,
+        boxHeight,
+      )
+      .stroke('black');
+
+    const opts: TextOptions = {
+      align: 'left',
+      characterSpacing: this.characterSpacingSmall,
+    };
+    let Text = 'ENTREGA NO VIZINHO AUTORIZADA?';
+    const textWidth = this.doc.widthOfString(Text, opts);
+    const textYOnBox = (textBoxHeight - 10);
+    this.doc
+      .rect(
+        this.marginLeft + this.offset,
+        this.lastY,
+        textWidth + paddingTextX * 2,
+        textBoxHeight,
+      )
+      .fill('black');
+    this.doc
+      .font('Helvetica-Bold')
+      .fontSize(this.fontSizeSmall)
+      .fill('white')
+      .text(
+        Text,
+        this.marginLeft + this.offset + paddingTextX,
+        this.lastY + textYOnBox,
+        opts,
+      );
+
+    Text = text || 'Não entregar ao vizinho';
+    this.doc
+      .font('Helvetica')
+      .fill('black')
+      .text(Text,
+        this.marginLeft + this.offset + paddingTextX, // Mesmo x que "Entrega ao ..."
+        this.lastY + Math.round(boxHeight) / 2 + textYOnBox,
+        opts); // TODO FIXME WARN: Verificar contra a etiqueta original
+
+    this.lastY += textBoxHeight + 20;
+  }
+
+  private drawRecipientBox(
+    nameLine1?: string,
+    nameLine2?: string,
+    street?: string,
+    streetNumber?: number,
+    complement?: string,
+    neighborhood?: string,
+    cep?: string,
+    city?: string,
+    state?: BrazilState,
+  ): void {
+    const addressContainerHeight = 127;
+    const addressContainerWidth = 204;
+    const textBoxHeight = 15;
+    const paddingTextX = this.offset + this.marginLeft;
+    this.doc
+      .rect(
+        paddingTextX,
+        this.lastY,
+        addressContainerWidth,
+        addressContainerHeight,
+      )
+      .stroke('black');
+    const opts: TextOptions = {
+      align: 'left',
+      characterSpacing: this.characterSpacingBig,
+    };
+    this.doc.font('Helvetica-Bold').fontSize(this.fontSizeBig);
+    const Text = 'DESTINATÁRIO';
+    const textWidth = this.doc.widthOfString(Text, opts);
+    const textYOnBox = (textBoxHeight - 11);
+    this.doc
+      .rect(
+        this.marginLeft + this.offset,
+        this.lastY,
+        textWidth + 10,
+        textBoxHeight,
+      )
+      .fill('black');
+    this.doc
+      .font('Helvetica-Bold')
+      .fontSize(this.fontSizeBig)
+      .fill('white')
+      .text(
+        Text,
+        this.marginLeft + this.offset + 5,
+        this.lastY + textYOnBox,
+        opts,
+      );
+  }
+
+  private drawDatamatrix(x: number, y: number): void {
+    // Creates a dataMatrix object
+    const barcodeGenerator = new BarCodeData();
+    const datamatrix = barcodeGenerator.createDatamatrix('80310-160', 31337, '80310-160', 31337);
+    drawStream(this.doc, x, y, datamatrix);
+  }
+
   public test() {
+    // Entry point to output PDF
     this.drawGluedLabelPlaceholder();
     this.drawSignReceipt();
+    this.drawShipToNeighbor();
+    this.drawRecipientBox();
+    this.drawDatamatrix(this.offset + 220, this.lastY);
     this.nextLabel(); // Avance para proxima etiqueta
     this.drawGluedLabelPlaceholder();
     this.drawSignReceipt();
+    this.drawShipToNeighbor();
+    this.drawRecipientBox();
+    this.drawDatamatrix(this.offset + 220, this.lastY);
     this.doc.end();
     writeFileSync('/tmp/lol.pdf', this.doc.read());
   }
