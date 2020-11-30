@@ -56,10 +56,10 @@ class DrawLabel extends LabelModel {
     [, Y] = topLeftCorner;
 
     this.doc
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(/* ...topLeftCorner */ X, Y)
       .lineTo(topLeftCorner[coord.x] + cornerSize, topLeftCorner[coord.y])
-      .stroke('black');
+      .stroke("black");
 
     [X, Y] = topRightCorner;
     this.doc.moveTo(/* ...topRightCorner */ X, Y);
@@ -67,10 +67,10 @@ class DrawLabel extends LabelModel {
     [X] = topRightCorner;
 
     this.doc
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(/* ...topRightCorner */ X, Y)
       .lineTo(topRightCorner[coord.x], topRightCorner[coord.y] + cornerSize)
-      .stroke('black');
+      .stroke("black");
 
     [X, Y] = bottomRightCorner;
     this.doc.moveTo(/* ...bottomRightCorner */ X, Y);
@@ -78,13 +78,13 @@ class DrawLabel extends LabelModel {
     [, Y] = bottomRightCorner;
 
     this.doc
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(/* ...bottomRightCorner */ X, Y)
       .lineTo(
         bottomRightCorner[coord.x] - cornerSize,
-        bottomRightCorner[coord.y],
+        bottomRightCorner[coord.y]
       )
-      .stroke('black');
+      .stroke("black");
 
     [X, Y] = bottomLeftCorner;
     this.doc.moveTo(/* ...bottomLeftCorner */ X, Y);
@@ -92,40 +92,34 @@ class DrawLabel extends LabelModel {
     [X] = bottomLeftCorner;
 
     this.doc
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(/* ...bottomLeftCorner */ X, Y)
       .lineTo(bottomLeftCorner[coord.x], bottomLeftCorner[coord.y] - cornerSize)
-      .stroke('black');
+      .stroke("black");
 
     // Colocar texto no placeholder da etiqueta colada
 
     const opts: TextOptions = {
-      align: 'center',
+      align: "center",
       width: labelWidth,
       characterSpacing: this.characterSpacingBig,
       lineGap,
     };
 
-    this.doc
-      .font('Helvetica')
-      .fontSize(this.fontSizeBig)
-      .fill('black')
-      .text(
-        'USO EXCLUSIVO DOS CORREIOS',
-        startDrawing, // X
-        textY,
-        opts,
-      ); // Y
+    this.doc.font("Helvetica").fontSize(this.fontSizeBig).fill("black").text(
+      "USO EXCLUSIVO DOS CORREIOS",
+      startDrawing, // X
+      textY,
+      opts
+    ); // Y
 
     opts.characterSpacing = this.characterSpacingSmall;
-    this.doc
-      .fontSize(this.fontSizeSmall)
-      .text(
-        'Cole aqui a etiqueta com o código identificador da encomenda',
-        startDrawing,
-        undefined, // Relativo ao texto anterior
-        opts,
-      );
+    this.doc.fontSize(this.fontSizeSmall).text(
+      "Cole aqui a etiqueta com o código identificador da encomenda",
+      startDrawing,
+      undefined, // Relativo ao texto anterior
+      opts
+    );
   }
 
   private drawSignReceipt(): void {
@@ -134,64 +128,50 @@ class DrawLabel extends LabelModel {
     const labelEnd = this.offset + this.halfPage - this.marginLeft + 1;
     let startDrawing: number = this.offset + this.marginLeft;
 
-    let text = 'Recebedor:';
+    let text = "Recebedor:";
     const opts: TextOptions = {
-      align: 'left',
+      align: "left",
       characterSpacing: this.characterSpacingSmall,
     };
     this.doc
       .fontSize(this.fontSizeSmall)
-      .text(
-        text,
-        startDrawing,
-        this.lastY,
-        opts,
-      );
+      .text(text, startDrawing, this.lastY, opts);
     let startAfterText = 1 + startDrawing + this.doc.widthOfString(text, opts);
     this.lastY -= 2; // Ajustezinho pra ficar mais fiel
     this.lastY += this.doc.heightOfString(text, opts);
     this.doc
       .moveTo(startAfterText, this.lastY)
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(labelEnd, this.lastY)
-      .stroke('black');
+      .stroke("black");
 
-    text = 'Assinatura:';
+    text = "Assinatura:";
     this.lastY += paddingTop;
     this.doc
       .fontSize(this.fontSizeSmall)
-      .text(
-        text,
-        startDrawing,
-        this.lastY,
-        opts,
-      );
+      .text(text, startDrawing, this.lastY, opts);
     const textY = this.lastY;
     startAfterText = 1 + startDrawing + this.doc.widthOfString(text, opts);
-    const endDrawing = this.offset + Math.round((labelEnd - 1 - startDrawing) / 2);
+    const endDrawing =
+      this.offset + Math.round((labelEnd - 1 - startDrawing) / 2);
     this.lastY -= 2; // Ajustezinho pra ficar mais fiel
     this.lastY += this.doc.heightOfString(text, opts);
     this.doc
       .moveTo(startAfterText, this.lastY)
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(endDrawing, this.lastY)
-      .stroke('black');
+      .stroke("black");
 
-    text = 'Documento:';
+    text = "Documento:";
     startDrawing = endDrawing + 2;
-    this.doc
-      .fontSize(this.fontSizeSmall)
-      .text(text,
-        startDrawing,
-        textY,
-        opts);
+    this.doc.fontSize(this.fontSizeSmall).text(text, startDrawing, textY, opts);
     startAfterText = 1 + startDrawing + this.doc.widthOfString(text, opts);
     opts.indent = undefined;
     this.doc
       .moveTo(startAfterText, this.lastY)
-      .lineCap('butt')
+      .lineCap("butt")
       .lineTo(labelEnd, this.lastY)
-      .stroke('black');
+      .stroke("black");
   }
 
   private drawShipToNeighbor(text?: string): void {
@@ -202,64 +182,51 @@ class DrawLabel extends LabelModel {
     const labelWidth = this.halfPage - this.marginLeft * 2;
     this.lastY += marginTop;
     this.doc
-      .rect(
-        this.marginLeft + this.offset,
-        this.lastY,
-        labelWidth,
-        boxHeight,
-      )
-      .stroke('black');
+      .rect(this.marginLeft + this.offset, this.lastY, labelWidth, boxHeight)
+      .stroke("black");
 
     const opts: TextOptions = {
-      align: 'left',
+      align: "left",
       characterSpacing: this.characterSpacingSmall,
     };
-    let Text = 'ENTREGA NO VIZINHO AUTORIZADA?';
+    let Text = "ENTREGA NO VIZINHO AUTORIZADA?";
     const textWidth = this.doc.widthOfString(Text, opts);
-    const textYOnBox = (textBoxHeight - 10);
+    const textYOnBox = textBoxHeight - 10;
     this.doc
       .rect(
         this.marginLeft + this.offset,
         this.lastY,
         textWidth + paddingTextX * 2,
-        textBoxHeight,
+        textBoxHeight
       )
-      .fill('black');
+      .fill("black");
     this.doc
-      .font('Helvetica-Bold')
+      .font("Helvetica-Bold")
       .fontSize(this.fontSizeSmall)
-      .fill('white')
+      .fill("white")
       .text(
         Text,
         this.marginLeft + this.offset + paddingTextX,
         this.lastY + textYOnBox,
-        opts,
+        opts
       );
 
-    Text = text || 'Não entregar ao vizinho';
+    Text = text || "Não entregar ao vizinho";
     this.doc
-      .font('Helvetica')
-      .fill('black')
-      .text(Text,
+      .font("Helvetica")
+      .fill("black")
+      .text(
+        Text,
         this.marginLeft + this.offset + paddingTextX, // Mesmo x que "Entrega ao ..."
         this.lastY + Math.round(boxHeight) / 2 + textYOnBox,
-        opts); // TODO FIXME WARN: Verificar contra a etiqueta original
+        opts
+      ); // TODO FIXME WARN: Verificar contra a etiqueta original
 
     this.lastY += textBoxHeight + 20;
   }
 
-  private drawRecipientBox(
-    nameLine1?: string,
-    nameLine2?: string,
-    street?: string,
-    streetNumber?: number,
-    complement?: string,
-    neighborhood?: string,
-    cep?: string,
-    city?: string,
-    state?: BrazilState,
-  ): void {
-    const addressContainerHeight = 127;
+  private drawRecipientBox(): void {
+    const addressContainerHeight = 120;
     const addressContainerWidth = 204;
     const textBoxHeight = 15;
     const paddingTextX = this.offset + this.marginLeft;
@@ -268,42 +235,209 @@ class DrawLabel extends LabelModel {
         paddingTextX,
         this.lastY,
         addressContainerWidth,
-        addressContainerHeight,
+        addressContainerHeight
       )
-      .stroke('black');
+      .stroke("black");
     const opts: TextOptions = {
-      align: 'left',
+      align: "left",
       characterSpacing: this.characterSpacingBig,
     };
-    this.doc.font('Helvetica-Bold').fontSize(this.fontSizeBig);
-    const Text = 'DESTINATÁRIO';
+    this.doc.font("Helvetica-Bold").fontSize(this.fontSizeBig);
+    const Text = "DESTINATÁRIO";
     const textWidth = this.doc.widthOfString(Text, opts);
-    const textYOnBox = (textBoxHeight - 11);
+    const textYOnBox = textBoxHeight - 11;
     this.doc
       .rect(
         this.marginLeft + this.offset,
         this.lastY,
         textWidth + 10,
-        textBoxHeight,
+        textBoxHeight
       )
-      .fill('black');
+      .fill("black");
     this.doc
-      .font('Helvetica-Bold')
+      .font("Helvetica-Bold")
       .fontSize(this.fontSizeBig)
-      .fill('white')
+      .fill("white")
       .text(
         Text,
         this.marginLeft + this.offset + 5,
         this.lastY + textYOnBox,
-        opts,
+        opts
+      );
+    this.lastY += textBoxHeight;
+  }
+
+  private drawDatamatrix(): void {
+    const x = this.offset + 220;
+    const y = this.lastY;
+    // Creates a dataMatrix object
+    const barcodeGenerator = new BarCodeData();
+    const datamatrix = barcodeGenerator.createDatamatrix(
+      "80310-160",
+      31337,
+      "80310-160",
+      31337
+    );
+    drawStream(this.doc, x, y, datamatrix);
+  }
+
+  private drawCode128(): void {
+    const x = this.offset + 20;
+    const y = this.lastY + 60;
+    // Creates a code128 objects
+    const barcodeGenerator = new BarCodeData();
+    const code128 = barcodeGenerator.createCode128("80310-160");
+    drawStream(this.doc, x, y, code128);
+  }
+
+  private drawAddressText(
+    cepSize: number,
+    nameLine1: string,
+    nameLine2: string | undefined,
+    street: string,
+    streetNumber: number,
+    complement: string | undefined,
+    neighborhood: string,
+    cep: string,
+    city: string,
+    state: BrazilState,
+    drawSender = false,
+  ): void {
+    const offsetY = 3;
+    const offesetX = 5;
+    const spaceBetweenLines = 8;
+    const opts: TextOptions = {
+      align: "left",
+      characterSpacing: this.characterSpacingSmall,
+    };
+    if (drawSender) {
+      this.doc
+        .font('Helvetica-Bold')
+        .fill('Black')
+        .text('Remetente:',
+        this.offset + this.marginLeft + offesetX,
+        this.lastY + offsetY
+        )
+        .font("Helvetica")
+        .fontSize(this.fontSizeSmall)
+        .text(
+          `${nameLine1}\n`,
+          this.offset + this.marginLeft + offesetX+ 46,
+          this.lastY + offsetY
+      );
+    } else {
+    this.doc
+      .fill("black")
+      .font("Helvetica")
+      .fontSize(this.fontSizeSmall)
+      .text(
+        `${nameLine1}\n`,
+        this.offset + this.marginLeft + offesetX,
+        this.lastY + offsetY
+      );
+    }
+
+    if (nameLine2) {
+      this.doc.text(
+        `${nameLine2}`,
+        this.offset + this.marginLeft + offesetX,
+        this.lastY + offsetY + spaceBetweenLines,
+        opts
+      );
+    }
+    this.doc.text(
+      `${street} ${streetNumber}`,
+      this.offset + this.marginLeft + offesetX,
+      this.lastY + offsetY + spaceBetweenLines * 2,
+      opts
+    );
+
+    if (complement) {
+      this.doc.text(
+        `${complement}`,
+        this.offset + this.marginLeft + offesetX,
+        this.lastY + offsetY + spaceBetweenLines * 3,
+        opts
+      );
+    }
+    this.doc
+      .fontSize(this.fontSizeSmall - 1)
+      .text(
+        `${neighborhood}`,
+        this.offset + this.marginLeft + offesetX + 60,
+        this.lastY + offsetY + spaceBetweenLines * 3 + 1,
+        opts
+      );
+
+    this.doc
+      .fontSize(cepSize)
+      .font("Helvetica-Bold")
+      .text(
+        cep,
+        this.offset + this.marginLeft + offesetX,
+        this.lastY + offsetY + spaceBetweenLines * 4 + 1,
+        opts
+      );
+    this.doc
+      .fontSize(this.fontSizeSmall)
+      .font("Helvetica")
+      .text(
+        `${city} - ${state}`,
+        this.offset + this.marginLeft + offesetX + 60,
+        this.lastY + offsetY + spaceBetweenLines * 4 + 1,
+        opts
       );
   }
 
-  private drawDatamatrix(x: number, y: number): void {
-    // Creates a dataMatrix object
-    const barcodeGenerator = new BarCodeData();
-    const datamatrix = barcodeGenerator.createDatamatrix('80310-160', 31337, '80310-160', 31337);
-    drawStream(this.doc, x, y, datamatrix);
+  private drawRecipientText(
+    nameLine1: string,
+    nameLine2: string | undefined,
+    street: string,
+    streetNumber: number,
+    complement: string | undefined,
+    neighborhood: string,
+    cep: string,
+    city: string,
+    state: BrazilState
+  ): void {
+    this.drawAddressText(
+      this.fontSizeSmall + 2,
+      nameLine1,
+      nameLine2,
+      street,
+      streetNumber,
+      complement,
+      neighborhood,
+      cep,
+      city,
+      state
+    );
+  }
+
+  private drawSenderText(
+    nameLine1: string,
+    nameLine2: string | undefined,
+    street: string,
+    streetNumber: number,
+    complement: string | undefined,
+    neighborhood: string,
+    cep: string,
+    city: string,
+    state: BrazilState
+  ): void {
+    this.lastY += 105
+    this.drawAddressText(this.fontSizeSmall,
+      nameLine1,
+      nameLine2,
+      street,
+      streetNumber,
+      complement,
+      neighborhood,
+      cep,
+      city,
+      state,
+      true
+    );
   }
 
   public test() {
@@ -311,16 +445,63 @@ class DrawLabel extends LabelModel {
     this.drawGluedLabelPlaceholder();
     this.drawSignReceipt();
     this.drawShipToNeighbor();
+    this.drawDatamatrix();
+    this.drawCode128();
     this.drawRecipientBox();
-    this.drawDatamatrix(this.offset + 220, this.lastY);
+    this.drawRecipientText(
+      "Paulo",
+      "Leminski Filho",
+      "R. Padre Gastón",
+      42,
+      "Casa",
+      "Cidade Industrial",
+      "81170-450",
+      "Curitiba",
+      "PR"
+    );
+    this.drawSenderText(
+      "Paulo",
+      "Leminski Filho",
+      "R. Padre Gastón",
+      42,
+      "Casa",
+      "Cidade Industrial",
+      "81170-450",
+      "Curitiba",
+      "PR"
+    );
     this.nextLabel(); // Avance para proxima etiqueta
     this.drawGluedLabelPlaceholder();
     this.drawSignReceipt();
     this.drawShipToNeighbor();
+    this.drawDatamatrix();
+    this.drawCode128();
     this.drawRecipientBox();
-    this.drawDatamatrix(this.offset + 220, this.lastY);
+    this.drawRecipientText(
+      "Paulo",
+      "Leminski Filho",
+      "R. Padre Gastón",
+      42,
+      "Casa",
+      "Cidade Industrial",
+      "81170-450",
+      "Curitiba",
+      "PR"
+    );
+    this.drawSenderText(
+      "Paulo",
+      "Leminski Filho",
+      "R. Padre Gastón",
+      42,
+      "Casa",
+      "Cidade Industrial",
+      "81170-450",
+      "Curitiba",
+      "PR"
+  );
+
     this.doc.end();
-    writeFileSync('/tmp/lol.pdf', this.doc.read());
+    writeFileSync("/tmp/lol.pdf", this.doc.read());
   }
 }
 
