@@ -91,7 +91,7 @@ class BarCodeModel {
       backgroundcolor: 'FFFFFF',
       scaleX: 1,
       scaleY: 1,
-      width: 45,
+      width: 46,
       height: 20,
       paddingwidth: 5,
       includetext: false,

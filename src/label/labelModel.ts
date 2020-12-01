@@ -10,7 +10,9 @@ class LabelModel {
 
   protected lastY: number;
 
-  protected readonly pageSize: number;
+  protected readonly pageWidth: number;
+
+  protected readonly pageHeight: number;
 
   protected readonly halfPage: number;
 
@@ -27,21 +29,27 @@ class LabelModel {
   protected readonly fontSizeBig: number;
 
   constructor() {
-    this.doc = new PDFKit({ bufferPages: true });
-    this.pageSize = this.doc.page.width; // A4
-    this.halfPage = Math.round(this.pageSize / 2);
+    this.doc = new PDFKit({
+      bufferPages: true,
+      size: 'A4',
+      margin: 0,
+      layout: 'portrait',
+    });
+    this.pageWidth = this.doc.page.width; // A4
+    this.pageHeight = this.doc.page.height;
+    this.halfPage = Math.round(this.pageWidth / 2);
     this.label = positionOnPage.topLeft; // primeira label
     this.lastY = 0;
     // propriedades de estilo que persistem em mais de um elemento da etiqueta
     this.marginTop = 12;
-    this.marginLeft = 12;
+    this.marginLeft = 9;
     this.fontSizeSmall = 8.2;
     this.characterSpacingSmall = 0;
     this.characterSpacingBig = 0.2;
     this.fontSizeBig = 10;
   }
 
-  protected get offset(): number {
+  protected get offsetX(): number {
     return (
       this.label === positionOnPage.topRight
       || this.label === positionOnPage.bottomRight
@@ -49,6 +57,15 @@ class LabelModel {
         ? this.halfPage - this.marginLeft
         : 0
     ); // Caso nao, coloque no inicio da pagina
+  }
+
+  protected get offsetY(): number {
+    return (
+      this.label === positionOnPage.bottomLeft
+      || this.label === positionOnPage.bottomRight
+        ? Math.round(this.pageHeight / 2) - this.marginTop
+        : 0
+    );
   }
 
   protected nextLabel(label?: number) {
