@@ -3,6 +3,9 @@ import bwipjs from 'bwip-js';
 import temp = require('temp');
 import BarCodeModel = require('./barcodeModel');
 
+// Arquivo antigo, primeira classe para implementar barcode
+// saindo num tempfile .png, sera implementado no futuro
+
 temp.track(); // limpa tempfiles ao sair do node
 
 class BarCodeFileGenerator extends BarCodeModel.default {

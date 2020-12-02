@@ -1,6 +1,9 @@
 import PDFKit from 'pdfkit';
 import bwipjs from 'bwip-js';
 
+// Desenha o barcode no PDFKit, esse arquivo eh uma ponte entre bibliotecas
+// Utilizamos ts-ignore pois tem um bug no bwip-js
+
 function DrawingPDFKit(doc: typeof PDFKit, opts:bwipjs.ToBufferOptions) {
   // Global graphics state
   let gsDx: number;

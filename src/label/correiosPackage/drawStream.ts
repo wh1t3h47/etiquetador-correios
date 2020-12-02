@@ -6,6 +6,8 @@ import BarCodeData from '../../barCode/barcodeModel';
 import drawStream from '../../barCode/drawStream';
 
 class DrawLabel extends LabelModel {
+  // Desenha a etiqueta do correios, ate 4 por pagina
+
   protected drawGluedLabelPlaceholder(): void {
     this.lastY = 0;
     const cornerSize = 12; // Tamanho do canto do retangulo
@@ -114,6 +116,7 @@ class DrawLabel extends LabelModel {
   }
 
   protected drawSignReceipt(): void {
+    // Desenha onde voce deve assinar na entrega
     const paddingTop = 7;
     this.lastY += paddingTop;
     const labelEnd = this.offsetX + this.halfPage - this.marginLeft + 1;
@@ -165,6 +168,7 @@ class DrawLabel extends LabelModel {
   }
 
   protected drawShipToNeighbor(text?: string): void {
+    // Desenha a caixa de entrega ao vizinho
     const marginTop = 9;
     const boxHeight = 30;
     const paddingTextX = 5;
@@ -216,6 +220,7 @@ class DrawLabel extends LabelModel {
   }
 
   protected drawRecipientBox(): void {
+    // Desenha a caixa do Destinatario e o textinho com fundo preto
     const addressContainerHeight = 120;
     const addressContainerWidth = 202;
     const textBoxHeight = 15;
@@ -258,6 +263,7 @@ class DrawLabel extends LabelModel {
   }
 
   protected drawDatamatrix(): void {
+    // Desenha o QR Code
     const x = this.offsetX + 215;
     const y = this.lastY;
     // Creates a dataMatrix object
@@ -272,9 +278,9 @@ class DrawLabel extends LabelModel {
   }
 
   protected drawCode128(): void {
+    // Desenha o BarCode (code128)
     const x = this.offsetX + 37;
     const y = this.lastY + 60;
-    // Creates a code128 objects
     const barcodeGenerator = new BarCodeData();
     const code128 = barcodeGenerator.createCode128('80310-160');
     drawStream(this.doc, x, y, code128);
@@ -293,8 +299,8 @@ class DrawLabel extends LabelModel {
     state: BrazilState,
     drawSender = false,
   ): void {
-    // Desenha o texto do endereco, utilizado tanto pelo
-    // remetente quanto pelo destinatario
+    // Desenha o texto do endereco com os parametros, utilizado tanto pelo
+    // remetente quanto pelo destinatario, drawSender diz se eh remetente
     const offsetY = 3;
     const offesetX = 5;
     const spaceBetweenLines = 8;

@@ -4,6 +4,8 @@ import DrawLabel from './drawStream';
 // Cria um arquivo PDF para testes manuais e gera o arquivo
 // /tmp/lol.pdf para prototipar
 
+// TODO: Refatorar pra for, suportar mais de uma pagina
+
 class DrawTest extends DrawLabel {
   public test() {
     // Entry point to output PDF

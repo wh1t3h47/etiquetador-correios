@@ -1,6 +1,9 @@
 import bwipjs from 'bwip-js';
 
+// Gera um modelo de DataMatrix para utilizar em drawStream e file
+
 interface Datamatrix {
+  // Tudo que precisamos para gerar um QR Code
   cepDestino: string,
   numeroRuaDestino: string,
   cepRemetente: string,
@@ -34,11 +37,16 @@ class BarCodeModel {
     CepRemetente: string,
     NumeroRuaRemetente: number,
   ): bwipjs.ToBufferOptions {
+    // Cria um objeto DataMatrix de acordo com as especificacoes do correios
+    // e como eles implementam, precisamos ligar para o correios pra testar
+
+    // Sanitizar CEPs
     this.sanitizeCep(CepDestino);
     const cepDestino: string = this.sanitizedCep;
     this.sanitizeCep(CepRemetente);
     const cepRemetente: string = this.sanitizedCep;
 
+    // TODO: Suportar string e converter pra numero
     if (NumeroRuaDestino > 99999 || NumeroRuaRemetente > 99999) {
       throw new Error('Erro: Número de rua muito alto');
     }
@@ -48,6 +56,8 @@ class BarCodeModel {
       '0',
     );
 
+    // Calcular a soma de digitos do checksum
+    // TODO: Testar mais, contra o pdf do correios
     let checkSum = 0;
     cepDestino.split('').forEach((d) => {
       const digit = parseInt(d, 10);
@@ -59,6 +69,7 @@ class BarCodeModel {
     checkSum = 10 - checkSum;
     const checkSumCepDestino = String(checkSum);
 
+    // Formatar o DataMatrix
     const datamatrix: Datamatrix = {
       cepDestino,
       numeroRuaDestino,
@@ -85,6 +96,7 @@ class BarCodeModel {
   }
 
   public createCode128(CepDestino: string): bwipjs.ToBufferOptions {
+    // cria um objeto de configuracao pra gerar um BarCode 128
     this.sanitizeCep(CepDestino);
     const cepDestino = this.sanitizedCep;
     return {
