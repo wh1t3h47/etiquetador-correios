@@ -10,4 +10,7 @@
 ![Another screenshot](https://beeimg.com/images/r63492071253.png)
 
 ## Como rodar?
+> Para instalar para desenvolver ou ate mesmo para rodar
+`yarn serve`
+`yarn install`
 `yarn tsc && node build/index.js`
