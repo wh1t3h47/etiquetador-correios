@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import PdfDraw from './label/correiosPackage/drawStream';
+import DrawTest from './label/correiosPackage/drawTest';
 
 (async () => {
-  const pdfCreateFileWithStream = new PdfDraw();
+  const pdfCreateFileWithStream = new DrawTest();
   pdfCreateFileWithStream.test();
   console.log('generated /tmp/lol.pdf, open it!');
 })();

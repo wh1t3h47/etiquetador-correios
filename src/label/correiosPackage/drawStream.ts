@@ -1,4 +1,3 @@
-import { writeFileSync } from 'fs';
 import {
   coordinates, coord, TextOptions, BrazilState,
 } from '../pageTypes';
@@ -7,50 +6,44 @@ import BarCodeData from '../../barCode/barcodeModel';
 import drawStream from '../../barCode/drawStream';
 
 class DrawLabel extends LabelModel {
-  private drawGluedLabelPlaceholder(): void {
+  protected drawGluedLabelPlaceholder(): void {
     this.lastY = 0;
     const cornerSize = 12; // Tamanho do canto do retangulo
     const widthBetweenCorners = 260; // Largura da caixa - cornerSize - marginLeft
     const heightBetweenCorners = 139; // tamanho da caixa - cornerSize - marginLeft
-
     // Tamanho total da caixa
     const labelWidth = widthBetweenCorners + cornerSize * 2;
-
     const startDrawing = this.offsetX + this.marginLeft;
-
     const lineGap = 3; // Espaco entre os dois textos do placeholder de etiqueta
     const textY = 69; // Y do 'USO EXCLUSIVO DO CORREIOS' (incluindo marginTop)
 
     // Seguimos a mesma ordem que as bordas no CSS seguem
-
     const topLeftCorner: coordinates = [
       startDrawing,
       this.marginTop + cornerSize + this.offsetY,
     ];
-
     const topRightCorner: coordinates = [
       startDrawing + cornerSize + widthBetweenCorners,
       this.marginTop + this.offsetY,
     ];
-
     const bottomRightCorner: coordinates = [
       topRightCorner[coord.x] + cornerSize,
       this.marginTop + cornerSize + heightBetweenCorners + this.offsetY,
     ];
-
     const bottomLeftCorner: coordinates = [
       startDrawing + cornerSize,
       cornerSize + bottomRightCorner[coord.y],
     ];
 
     this.lastY = bottomLeftCorner[coord.y];
-
     /* NOTA: Eu me asseguro pessoalmente de que todos esses parametros spread
      * t^em obrigat`oriamente dois argumentos satisfeitos pelo tipo coordinates.
      * O motivo pelos operadores rest estarem comentados eh porque o typescript
      * ainda nao suporta operadores rest adequadamente (mesmo usando array fixa)
      */
     let [X, Y] = topLeftCorner; // Can TypeScript support rest please?!
+    // A razao para nao utilizar spread aqui eh que usando
+    // vscode no typescript nao eh suportado propriamente
     this.doc.moveTo(/* ...topLeftCorner */ X, Y);
     topLeftCorner[coord.y] -= cornerSize;
     [, Y] = topLeftCorner;
@@ -98,7 +91,6 @@ class DrawLabel extends LabelModel {
       .stroke('black');
 
     // Colocar texto no placeholder da etiqueta colada
-
     const opts: TextOptions = {
       align: 'center',
       width: labelWidth,
@@ -112,7 +104,6 @@ class DrawLabel extends LabelModel {
       textY + this.offsetY,
       opts,
     ); // Y
-
     opts.characterSpacing = this.characterSpacingSmall;
     this.doc.fontSize(this.fontSizeSmall).text(
       'Cole aqui a etiqueta com o código identificador da encomenda',
@@ -122,7 +113,7 @@ class DrawLabel extends LabelModel {
     );
   }
 
-  private drawSignReceipt(): void {
+  protected drawSignReceipt(): void {
     const paddingTop = 7;
     this.lastY += paddingTop;
     const labelEnd = this.offsetX + this.halfPage - this.marginLeft + 1;
@@ -173,7 +164,7 @@ class DrawLabel extends LabelModel {
       .stroke('black');
   }
 
-  private drawShipToNeighbor(text?: string): void {
+  protected drawShipToNeighbor(text?: string): void {
     const marginTop = 9;
     const boxHeight = 30;
     const paddingTextX = 5;
@@ -224,7 +215,7 @@ class DrawLabel extends LabelModel {
     this.lastY += textBoxHeight + 20;
   }
 
-  private drawRecipientBox(): void {
+  protected drawRecipientBox(): void {
     const addressContainerHeight = 120;
     const addressContainerWidth = 202;
     const textBoxHeight = 15;
@@ -266,7 +257,7 @@ class DrawLabel extends LabelModel {
     this.lastY += textBoxHeight;
   }
 
-  private drawDatamatrix(): void {
+  protected drawDatamatrix(): void {
     const x = this.offsetX + 215;
     const y = this.lastY;
     // Creates a dataMatrix object
@@ -280,7 +271,7 @@ class DrawLabel extends LabelModel {
     drawStream(this.doc, x, y, datamatrix);
   }
 
-  private drawCode128(): void {
+  protected drawCode128(): void {
     const x = this.offsetX + 37;
     const y = this.lastY + 60;
     // Creates a code128 objects
@@ -289,7 +280,7 @@ class DrawLabel extends LabelModel {
     drawStream(this.doc, x, y, code128);
   }
 
-  private drawAddressText(
+  protected drawAddressText(
     cepSize: number,
     nameLine1: string,
     nameLine2: string | undefined,
@@ -302,6 +293,8 @@ class DrawLabel extends LabelModel {
     state: BrazilState,
     drawSender = false,
   ): void {
+    // Desenha o texto do endereco, utilizado tanto pelo
+    // remetente quanto pelo destinatario
     const offsetY = 3;
     const offesetX = 5;
     const spaceBetweenLines = 8;
@@ -352,6 +345,8 @@ class DrawLabel extends LabelModel {
     );
 
     if (drawSender) {
+      // caso desenhamos o sender, queremos grudar complemento
+      // e bairro, cep e cidade
       if (complement) {
         this.doc.text(
           `${complement}  ${neighborhood}`,
@@ -369,6 +364,8 @@ class DrawLabel extends LabelModel {
       }
     } else {
       if (complement) {
+        // complemento eh opcional, quando nao temos ele,
+        // desenhamos o bairro no comeco da linha
         this.doc.text(
           `${complement}`,
           this.offsetX + this.marginLeft + offesetX,
@@ -395,29 +392,30 @@ class DrawLabel extends LabelModel {
         this.lastY + offsetY + spaceBetweenLines * 4 + 1,
         opts,
       );
+    this.doc
+      .font('Helvetica');
     if (drawSender) {
+      // posicao do cidade - PR (Cidade, estado) fica diferente
       this.doc
-        .font('Helvetica')
         .text(
           `${city} - ${state}`,
-          this.offsetX + this.marginLeft + offesetX + 44,
+          this.offsetX + this.marginLeft + offesetX + 44, // logo apos o cep
           this.lastY + offsetY + spaceBetweenLines * 4 + 1,
           opts,
         );
     } else {
       this.doc
         .fontSize(this.fontSizeSmall)
-        .font('Helvetica')
         .text(
           `${city} - ${state}`,
-          this.offsetX + this.marginLeft + offesetX + 60,
+          this.offsetX + this.marginLeft + offesetX + 60, // bem depois do cep
           this.lastY + offsetY + spaceBetweenLines * 4 + 1,
           opts,
         );
     }
   }
 
-  private drawRecipientText(
+  protected drawRecipientText(
     nameLine1: string,
     nameLine2: string | undefined,
     street: string,
@@ -428,6 +426,7 @@ class DrawLabel extends LabelModel {
     city: string,
     state: BrazilState,
   ): void {
+    // Desenha o endereco do destinatario
     this.drawAddressText(
       this.fontSizeSmall + 2,
       nameLine1,
@@ -442,7 +441,7 @@ class DrawLabel extends LabelModel {
     );
   }
 
-  private drawSenderText(
+  protected drawSenderText(
     nameLine1: string,
     nameLine2: string | undefined,
     street: string,
@@ -453,6 +452,7 @@ class DrawLabel extends LabelModel {
     city: string,
     state: BrazilState,
   ): void {
+    // texto do remetente, fica embaixo da etiqueta com barcode
     this.lastY += 105;
     this.drawAddressText(this.fontSizeSmall,
       nameLine1,
@@ -465,128 +465,6 @@ class DrawLabel extends LabelModel {
       city,
       state,
       true);
-  }
-
-  public test() {
-    // Entry point to output PDF
-    this.drawGluedLabelPlaceholder();
-    this.drawSignReceipt();
-    this.drawShipToNeighbor();
-    this.drawDatamatrix();
-    this.drawCode128();
-    this.drawRecipientBox();
-    this.drawRecipientText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.drawSenderText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.nextLabel(); // Avance para proxima etiqueta
-    this.drawGluedLabelPlaceholder();
-    this.drawSignReceipt();
-    this.drawShipToNeighbor();
-    this.drawDatamatrix();
-    this.drawCode128();
-    this.drawRecipientBox();
-    this.drawRecipientText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.drawSenderText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.nextLabel();
-    this.drawGluedLabelPlaceholder();
-    this.drawSignReceipt();
-    this.drawShipToNeighbor();
-    this.drawDatamatrix();
-    this.drawCode128();
-    this.drawRecipientBox();
-    this.drawRecipientText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.drawSenderText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.nextLabel(); // Avance para proxima etiqueta
-    this.drawGluedLabelPlaceholder();
-    this.drawSignReceipt();
-    this.drawShipToNeighbor();
-    this.drawDatamatrix();
-    this.drawCode128();
-    this.drawRecipientBox();
-    this.drawRecipientText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-    this.drawSenderText(
-      'Paulo',
-      'Leminski Filho',
-      'R. Padre Gastón',
-      42,
-      'Casa',
-      'Cidade Industrial',
-      '81170-450',
-      'Curitiba',
-      'PR',
-    );
-
-    this.doc.end();
-    writeFileSync('/tmp/lol.pdf', this.doc.read());
   }
 }
 

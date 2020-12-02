@@ -1,5 +1,8 @@
 import PDFKit from 'pdfkit';
 
+// Apenas definicoes de tipo, note que o import do PDFKit
+// Pode aparecer acinzentado em algumas versoes do vscode
+
 type TextOptions = PDFKit.Mixins.TextOptions;
 
 type coordinates<M extends string = "0" | "1"> = {
@@ -22,6 +25,7 @@ const enum positionOnPage { // eslint-disable-line
   "bottomRight",
 }
 
+// Um seletor mais amigavel pro usuario
 type BrazilState =
                   "AC" | "AL" | "AM" | "AP" | "BA" | "CE" | "DF" | "ES" | "GO" |
                   "MA" | "MT" | "MS" | "MG" | "PA" | "PB" | "PR" | "PE" | "PI" |

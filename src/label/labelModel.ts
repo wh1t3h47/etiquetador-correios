@@ -14,6 +14,7 @@ class LabelModel {
 
   protected readonly pageHeight: number;
 
+  // Utilizado apenas para o x
   protected readonly halfPage: number;
 
   protected readonly marginTop: number;
@@ -50,6 +51,8 @@ class LabelModel {
   }
 
   protected get offsetX(): number {
+    // Retorna a posicao x  de acordo com o numero da etiqueta
+    // que estamos alterando (plotamos 1/4 da pagina)
     return (
       this.label === positionOnPage.topRight
       || this.label === positionOnPage.bottomRight
@@ -60,15 +63,17 @@ class LabelModel {
   }
 
   protected get offsetY(): number {
-    return (
-      this.label === positionOnPage.bottomLeft
-      || this.label === positionOnPage.bottomRight
-        ? Math.round(this.pageHeight / 2) - this.marginTop
-        : 0
-    );
+    // Retorna a posicao y de acordo com o numero da etiqueta
+    // que estamos alterando (plotamos 1/4 da pagina)
+    return this.label === positionOnPage.bottomLeft ||
+      this.label === positionOnPage.bottomRight
+      ? Math.round(this.pageHeight / 2) - this.marginTop
+      : 0;
   }
 
   protected nextLabel(label?: number) {
+    // Plotamos 1/4 da pagina, funcao de controle da posicao
+    // de etiqueta que estamos plotando
     const Label = label || this.label + 1;
     this.label = Label;
   }

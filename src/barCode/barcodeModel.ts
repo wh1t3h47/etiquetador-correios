@@ -9,6 +9,8 @@ interface Datamatrix {
 }
 
 class BarCodeModel {
+  // Funcao modelo para desenhar barcodes, apenas processa dados
+  // que serao consumidos pela drawStream e file
   protected sanitizedCep: string;
 
   constructor() {
