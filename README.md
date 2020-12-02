@@ -11,6 +11,9 @@
 
 ## Como rodar?
 > Para instalar, desenvolver, rodar, etc...
+
 `yarn serve`
+
 `yarn install`
+
 `yarn tsc && node build/index.js`
