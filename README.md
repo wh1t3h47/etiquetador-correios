@@ -5,6 +5,8 @@
 > 2. BwipJs para **codigo de barras e QR Code**
 
 ![Screenshot of etiquetador-correios](https://beeimg.com/images/i48543337921.png)
+![Screenshot feito 4 etq](https://i.ibb.co/qYVLmjS/Target.png)
+## Desenvolvimento:
 ![Another screenshot](https://beeimg.com/images/r63492071253.png)
 
 ## Como rodar?
