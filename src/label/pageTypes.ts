@@ -31,4 +31,24 @@ type BrazilState =
                   "MA" | "MT" | "MS" | "MG" | "PA" | "PB" | "PR" | "PE" | "PI" |
                   "RJ" | "RN" | "RO" | "RS" | "RR" | "SC" | "SE" | "SP" | "TO";
 
-export { coordinates, coord, positionOnPage, TextOptions, BrazilState };
+interface address {
+  NomeLinha1: string;
+  NomeLinha2: string;
+  RuaComPrefixo: string;
+  NumeroDaRua: number;
+  Complemento?: string;
+  Bairro: string;
+  CEP: string;
+  Cidade: string;
+  Estado: BrazilState;
+}
+
+interface sender {
+  address: address;
+}
+
+interface recipient {
+  address: address;
+}
+
+export { coordinates, coord, positionOnPage, TextOptions, BrazilState, sender, recipient};
