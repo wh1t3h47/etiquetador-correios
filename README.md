@@ -4,16 +4,21 @@
 > 1. PDFKit para a producao de PDFs
 > 2. BwipJs para **codigo de barras e QR Code**
 
+# Etiqueta original do correios
+> Modelamos nossa etiqueta em cima da etiqueta oficial deles
 ![Screenshot of etiquetador-correios](https://beeimg.com/images/i48543337921.png)
-![Screenshot feito 4 etq](https://i.ibb.co/qYVLmjS/Target.png)
+# Screenshot da nossa etiqueta
+> Aqui podemos ver o que geramos com **BwipJs** e **PDFKit**
+![Screenshot feito 4 etiquetas](https://i.ibb.co/qYVLmjS/Target.png)
 ## Desenvolvimento:
 ![Another screenshot](https://beeimg.com/images/r63492071253.png)
 
 ## Como rodar?
 > Para instalar, desenvolver, rodar, etc...
 
-`yarn serve`
 
-`yarn install`
+`yarn serve # Servir pagina de desenvolvimento`
 
-`yarn tsc && node build/index.js`
+`yarn install # Para instalar as dependencias`
+
+`yarn tsc && node build/index.js # Rodar build`
